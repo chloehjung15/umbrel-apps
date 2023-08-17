@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
     environment:
       - LOG_LEVEL=DEBUG
-      - DB_HOST=db
+      - DB_HOST=$APP_BOLTCARD_SERVICE_DB_IP
       - DB_USER=cardapp
       - DB_PASSWORD=database_password
       - DB_PORT=5432    
@@ -24,7 +24,7 @@ services:
       - ${APP_LIGHTNING_NODE_DATA_DIR}:/lnd:ro
     networks:
       default:
-        ipv4_address: $APP_BOLTCARD_HUB_IP
+        ipv4_address: $APP_BOLTCARD_SERVICE_IP
   boltcard_db:
     build: 
       context: ${APP_DATA_DIR}/database
@@ -65,7 +65,7 @@ services:
       - "5432"
     networks:
       default:
-        ipv4_address: $APP_BOLTCARD_HUB_IP
+        ipv4_address: $APP_BOLTCARD_SERVICE_DB_IP
   redis:
     image: redis:6.2-buster
     command: redis-server --requirepass ${APP_PASSWORD}
@@ -74,9 +74,6 @@ services:
     stop_signal: SIGINT
     volumes:
       - ${APP_DATA_DIR}/database/redis-db:/data
-    networks:
-      default:
-        ipv4_address: $APP_BOLTCARD_HUB_IP
   hub:
     image: onesandzerosnz/boltcard-lndhub:v0.2.0
     depends_on: [ redis ]
@@ -97,7 +94,7 @@ services:
         "intraHubFee": 0.003,
         "redis": { "port": 6379, "host": "boltcard_redis", "family": 4, "password": "$APP_PASSWORD", "db": 0 }, 
         "lnd": { "url": "$APP_LIGHTNING_NODE_IP:$APP_LIGHTNING_NODE_GRPC_PORT", "password": ""}, 
-        "boltcardservice": { "url": "http://$APP_BOLTCARD_HUB_IP:9001", "service_url": "http://$APP_BOLTCARD_HUB_IP:9000" }
+        "boltcardservice": { "url": "http://$APP_BOLTCARD_SERVICE_IP:9001", "service_url": "http://$APP_BOLTCARD_SERVICE_IP:9000" }
       }'
     volumes:
       - ${APP_LIGHTNING_NODE_DATA_DIR}:/lnd:ro
@@ -116,6 +113,3 @@ services:
       - ${APP_DATA_DIR}/caddy/Caddyfile:/etc/caddy/Caddyfile
       - ${APP_DATA_DIR}/caddy/data:/data
       - ${APP_DATA_DIR}/caddy/config:/config
-    networks:
-      default:
-        ipv4_address: $APP_BOLTCARD_HUB_IP
