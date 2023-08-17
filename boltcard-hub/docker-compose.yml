@@ -1,0 +1,122 @@
+version: '3'
+services:
+  boltcard:
+    image: onesandzerosnz/boltcard:v0.4.0
+    container_name: boltcard_main
+    depends_on:
+      - db
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=DEBUG
+      - DB_HOST=db
+      - DB_USER=cardapp
+      - DB_PASSWORD=database_password
+      - DB_PORT=5432    
+      - DB_NAME=card_db
+    expose: 
+      - "9000"
+      - "9001"
+    volumes:
+      - ${APP_LIGHTNING_NODE_DATA_DIR}:/lnd:ro
+    networks:
+      default:
+        ipv4_address: $APP_BOLTCARD_HUB_IP
+  db:
+    build: 
+      context: ./
+      dockerfile: Dockerfile.postgres
+    container_name: boltcard_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=cardapp
+      - POSTGRES_PASSWORD=database_password
+      - POSTGRES_DB=card_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - LOG_LEVEL=DEBUG
+      - HOST_DOMAIN=${APP_DOMAIN}:${APP_BOLTCARD_HUB_PORT}
+      - MIN_WITHDRAW_SATS=1
+      - MAX_WITHDRAW_SATS=1000000
+      - LN_HOST=${APP_LIGHTNING_NODE_IP}
+      - LN_PORT=${APP_LIGHTNING_NODE_GRPC_PORT}
+      - LN_TLS_FILE=/lnd/tls.cert
+      - LN_MACAROON_FILE=/lnd/data/chain/bitcoin/${APP_BITCOIN_NETWORK}/admin.macaroon
+      - FEE_LIMIT_SAT=10
+      - FEE_LIMIT_PERCENT=0.5
+      - LN_TESTNODE=
+      - FUNCTION_LNURLW=ENABLE
+      - FUNCTION_LNURLP=ENABLE
+      - FUNCTION_EMAIL=DISABLE
+      - AWS_SES_ID=
+      - AWS_SES_SECRET=
+      - AWS_SES_EMAIL_FROM=
+      - EMAIL_MAX_TXS=
+      - FUNCTION_LNDHUB=ENABLE
+      - LNDHUB_URL=http://bolcard_hub:9002
+      - FUNCTION_INTERNAL_API=ENABLE
+    volumes:
+      - ${APP_DATA_DIR}/database/service-db:/var/lib/postgresql/data
+      - ${APP_DATA_DIR}/sql/select_db.sql:/docker-entrypoint-initdb.d/select_db.sql
+      - ${APP_DATA_DIR}/sql/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
+      - ${APP_DATA_DIR}/sql/settings_db.sh:/docker-entrypoint-initdb.d/settings_db.sh
+    expose:
+      - "5432"
+    networks:
+      default:
+        ipv4_address: $APP_BOLTCARD_HUB_IP
+  redis:
+    container_name: boltcard_redis
+    image: redis:6.2-buster
+    command: redis-server --requirepass ${APP_PASSWORD}
+    restart: on-failure
+    stop_grace_period: 5m
+    stop_signal: SIGINT
+    volumes:
+      - ${APP_DATA_DIR}/database/redis-db:/data
+    networks:
+      default:
+        ipv4_address: $APP_BOLTCARD_HUB_IP
+  web:
+    image: onesandzerosnz/boltcard-lndhub:v0.2.0
+    container_name: boltcard_hub
+    depends_on: [ redis ]
+    restart: on-failure
+    stop_grace_period: 5m30s
+    stop_signal: SIGINT
+    expose:
+      - "9002"
+    environment:
+      PORT: "9002"
+      LND_CERT_FILE: "/lnd/tls.cert"
+      LND_ADMIN_MACAROON_FILE: "/lnd/data/chain/bitcoin/mainnet/admin.macaroon"
+      CONFIG: '{
+        "enableUpdateDescribeGraph": false,
+        "postRateLimit": 100,
+        "rateLimit": 200,
+        "forwardReserveFee": 0.01,
+        "intraHubFee": 0.003,
+        "redis": { "port": 6379, "host": "boltcard_redis", "family": 4, "password": "$APP_PASSWORD", "db": 0 }, 
+        "lnd": { "url": "$APP_LIGHTNING_NODE_IP:$APP_LIGHTNING_NODE_GRPC_PORT", "password": ""}, 
+        "boltcardservice": { "url": "http://boltcard_main:9001", "service_url": "http://boltcard_main:9000" }
+      }'
+      # GROUNDCONTROL: "$GROUNDCONTROL"
+    volumes:
+      - ${APP_LIGHTNING_NODE_DATA_DIR}:/lnd:ro
+    networks:
+      default:
+        ipv4_address: $APP_BOLTCARD_HUB_IP
+  webserver:
+    image: caddy
+    container_name: boltcard_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "8888:8888"
+      - "443:443"
+    volumes:
+      - ${APP_DATA_DIR}/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ${APP_DATA_DIR}/caddy/data:/data
+      - ${APP_DATA_DIR}/caddy/config:/config
+    networks:
+      default:
+        ipv4_address: $APP_BOLTCARD_HUB_IP
