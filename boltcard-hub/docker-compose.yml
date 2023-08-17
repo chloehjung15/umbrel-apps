@@ -101,7 +101,7 @@ services:
     networks:
       default:
         ipv4_address: $APP_BOLTCARD_HUB_IP
-  webserver:
+  caddy:
     image: caddy
     restart: unless-stopped
     environment: 
