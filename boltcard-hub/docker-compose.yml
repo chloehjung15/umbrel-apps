@@ -103,10 +103,9 @@ services:
         ipv4_address: $APP_BOLTCARD_HUB_IP
   webserver:
     image: caddy
-    container_name: boltcard_caddy
     restart: unless-stopped
     environment: 
-      HOST_NAME: 
+      APP_BOLTCARD_SERVICE_IP: $APP_BOLTCARD_SERVICE_IP
     ports:
       - "$APP_BOLTCARD_SERVICE_PORT:8080"
     volumes:
