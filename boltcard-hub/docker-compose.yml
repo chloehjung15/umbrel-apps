@@ -27,7 +27,7 @@ services:
         ipv4_address: $APP_BOLTCARD_HUB_IP
   boltcard_db:
     build: 
-      context: ./
+      context: ${APP_DATA_DIR}/database
       dockerfile: Dockerfile.postgres
     restart: unless-stopped
     environment:
