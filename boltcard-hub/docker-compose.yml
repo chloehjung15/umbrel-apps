@@ -1,8 +1,12 @@
 version: '3'
 services:
+  app_proxy:
+    environment:
+      APP_HOST: boltcard-hub_hub_1
+      APP_PORT: 9002
+      PROXY_AUTH_ADD: "false"
   boltcard:
     image: onesandzerosnz/boltcard:v0.4.0
-    container_name: boltcard_main
     depends_on:
       - db
     restart: unless-stopped
@@ -21,11 +25,10 @@ services:
     networks:
       default:
         ipv4_address: $APP_BOLTCARD_HUB_IP
-  db:
+  boltcard_db:
     build: 
       context: ./
       dockerfile: Dockerfile.postgres
-    container_name: boltcard_db
     restart: unless-stopped
     environment:
       - POSTGRES_USER=cardapp
@@ -51,7 +54,7 @@ services:
       - AWS_SES_EMAIL_FROM=
       - EMAIL_MAX_TXS=
       - FUNCTION_LNDHUB=ENABLE
-      - LNDHUB_URL=http://bolcard_hub:9002
+      - LNDHUB_URL=http://$APP_BOLTCARD_HUB_IP:9002
       - FUNCTION_INTERNAL_API=ENABLE
     volumes:
       - ${APP_DATA_DIR}/database/service-db:/var/lib/postgresql/data
@@ -64,7 +67,6 @@ services:
       default:
         ipv4_address: $APP_BOLTCARD_HUB_IP
   redis:
-    container_name: boltcard_redis
     image: redis:6.2-buster
     command: redis-server --requirepass ${APP_PASSWORD}
     restart: on-failure
@@ -75,9 +77,8 @@ services:
     networks:
       default:
         ipv4_address: $APP_BOLTCARD_HUB_IP
-  web:
+  hub:
     image: onesandzerosnz/boltcard-lndhub:v0.2.0
-    container_name: boltcard_hub
     depends_on: [ redis ]
     restart: on-failure
     stop_grace_period: 5m30s
@@ -96,9 +97,8 @@ services:
         "intraHubFee": 0.003,
         "redis": { "port": 6379, "host": "boltcard_redis", "family": 4, "password": "$APP_PASSWORD", "db": 0 }, 
         "lnd": { "url": "$APP_LIGHTNING_NODE_IP:$APP_LIGHTNING_NODE_GRPC_PORT", "password": ""}, 
-        "boltcardservice": { "url": "http://boltcard_main:9001", "service_url": "http://boltcard_main:9000" }
+        "boltcardservice": { "url": "http://$APP_BOLTCARD_HUB_IP:9001", "service_url": "http://$APP_BOLTCARD_HUB_IP:9000" }
       }'
-      # GROUNDCONTROL: "$GROUNDCONTROL"
     volumes:
       - ${APP_LIGHTNING_NODE_DATA_DIR}:/lnd:ro
     networks:
@@ -111,7 +111,6 @@ services:
     environment: 
       HOST_NAME: 
     ports:
-      - "$APP_BOLTCARD_HUB_PORT:80"
       - "$APP_BOLTCARD_SERVICE_PORT:8080"
     volumes:
       - ${APP_DATA_DIR}/caddy/Caddyfile:/etc/caddy/Caddyfile
