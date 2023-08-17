@@ -108,11 +108,11 @@ services:
     image: caddy
     container_name: boltcard_caddy
     restart: unless-stopped
+    environment: 
+      HOST_NAME: 
     ports:
-      - "80:80"
-      - "8080:8080"
-      - "8888:8888"
-      - "443:443"
+      - "$APP_BOLTCARD_HUB_PORT:80"
+      - "$APP_BOLTCARD_SERVICE_PORT:8080"
     volumes:
       - ${APP_DATA_DIR}/caddy/Caddyfile:/etc/caddy/Caddyfile
       - ${APP_DATA_DIR}/caddy/data:/data

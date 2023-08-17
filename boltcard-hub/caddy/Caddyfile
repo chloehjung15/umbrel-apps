@@ -1,2 +1,6 @@
-https://$HOST_NAME
-reverse_proxy boltcard_main:9000
+:8080 {
+  reverse_proxy boltcard_main:9000
+}
+:80 {
+  reverse_proxy boltcard_hub:9002
+}
