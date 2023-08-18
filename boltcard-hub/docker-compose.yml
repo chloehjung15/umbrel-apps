@@ -74,6 +74,9 @@ services:
     stop_signal: SIGINT
     volumes:
       - ${APP_DATA_DIR}/database/redis-db:/data
+    networks:
+      default:
+        ipv4_address: $APP_BOLTCARD_REDIS_IP
   hub:
     image: onesandzerosnz/boltcard-lndhub:v0.2.0
     depends_on: [ redis ]
