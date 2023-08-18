@@ -13,10 +13,10 @@ services:
     environment:
       - LOG_LEVEL=DEBUG
       - DB_HOST=$APP_BOLTCARD_SERVICE_DB_IP
-      - DB_USER=cardapp
-      - DB_PASSWORD=database_password
+      - DB_USER=${APP_BOLTCARD_DB_USER}
+      - DB_PASSWORD=${APP_BOLTCARD_DB_PASSWORD}
       - DB_PORT=5432    
-      - DB_NAME=card_db
+      - DB_NAME=${APP_BOLTCARD_DB_NAME}
     expose: 
       - "9000"
       - "9001"
@@ -31,9 +31,9 @@ services:
       dockerfile: Dockerfile.postgres
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=cardapp
-      - POSTGRES_PASSWORD=database_password
-      - POSTGRES_DB=card_db
+      - POSTGRES_USER=${APP_BOLTCARD_DB_USER}
+      - POSTGRES_PASSWORD=${APP_BOLTCARD_DB_PASSWORD}
+      - POSTGRES_DB=${APP_BOLTCARD_DB_NAME}
       - PGDATA=/var/lib/postgresql/data/pgdata
       - LOG_LEVEL=DEBUG
       - HOST_DOMAIN=${APP_DOMAIN}:${APP_BOLTCARD_HUB_PORT}
@@ -101,6 +101,21 @@ services:
     networks:
       default:
         ipv4_address: $APP_BOLTCARD_HUB_IP
+  settings-gui:
+    image: onesandzerosnz/boltcardgui-umbrel:v0.1.0
+    depends_on:
+      - boltcard_db
+    environment:
+      - DOCUMENT_ROOT=/var/www/html
+      - SS_TRUSTED_PROXY_IPS=*
+      - SS_ENVIRONMENT_TYPE=${SS_ENVIRONMENT_TYPE}
+      - SS_DATABASE_SERVER=${APP_BOLTCARD_SERVICE_DB_IP}
+      - SS_DATABASE_NAME=${APP_BOLTCARD_DB_NAME}
+      - SS_DATABASE_USERNAME=${APP_BOLTCARD_DB_USER}
+      - SS_DATABASE_PASSWORD=${APP_BOLTCARD_DB_PASSWORD}
+      - SS_DATABASE_CLASS=PostgreSQLDatabase
+    ports:
+      - 1972:80
   caddy:
     image: caddy
     restart: unless-stopped
