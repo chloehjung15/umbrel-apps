@@ -36,7 +36,7 @@ services:
       - POSTGRES_DB=${APP_BOLTCARD_DB_NAME}
       - PGDATA=/var/lib/postgresql/data/pgdata
       - LOG_LEVEL=DEBUG
-      - HOST_DOMAIN=${APP_DOMAIN}:${APP_BOLTCARD_HUB_PORT}
+      - HOST_DOMAIN=
       - MIN_WITHDRAW_SATS=1
       - MAX_WITHDRAW_SATS=1000000
       - LN_HOST=${APP_LIGHTNING_NODE_IP}
