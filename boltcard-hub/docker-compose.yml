@@ -105,13 +105,13 @@ services:
       default:
         ipv4_address: $APP_BOLTCARD_HUB_IP
   settings-gui:
-    image: onesandzerosnz/boltcardgui-umbrel:v0.1.0
+    image: onesandzerosnz/boltcardgui-umbrel:v0.1.1
     depends_on:
       - boltcard_db
     environment:
       - DOCUMENT_ROOT=/var/www/html
       - SS_TRUSTED_PROXY_IPS=*
-      - SS_ENVIRONMENT_TYPE=dev
+      - SS_ENVIRONMENT_TYPE=live
       - SS_DATABASE_SERVER=${APP_BOLTCARD_SERVICE_DB_IP}
       - SS_DATABASE_NAME=${APP_BOLTCARD_DB_NAME}
       - SS_DATABASE_USERNAME=${APP_BOLTCARD_DB_USER}
