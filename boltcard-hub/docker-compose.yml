@@ -4,7 +4,8 @@ services:
     environment:
       APP_HOST: boltcard-hub_caddy_1
       APP_PORT: 8080
-      PROXY_AUTH_ADD: "false"
+      PROXY_AUTH_WHITELIST: "*"
+      PROXY_AUTH_BLACKLIST: "/settings/*"
   boltcard:
     image: onesandzerosnz/boltcard:v0.4.0
     depends_on:
@@ -119,6 +120,7 @@ services:
       - SS_DATABASE_USERNAME=${APP_BOLTCARD_DB_USER}
       - SS_DATABASE_PASSWORD=${APP_BOLTCARD_DB_PASSWORD}
       - SS_DATABASE_CLASS=PostgreSQLDatabase
+      - SS_BASE_URL=https://${APP_DOMAIN}/settings
   caddy:
     image: caddy
     restart: unless-stopped
