@@ -4,6 +4,22 @@
     reverse_proxy boltcard-hub_settings-gui_1:80
   }
 
+  handle /ping {
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+  handle /ln {
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+  handle /cb {
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+  handle /.well-known/lnurlp/* {
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+  handle /lnurlp/* {
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+
 
   reverse_proxy boltcard-hub_hub_1:9002
 }
