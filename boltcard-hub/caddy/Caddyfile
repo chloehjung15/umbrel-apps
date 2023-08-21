@@ -1,9 +1,9 @@
 :8080 {
   
   handle_path /settings/* {
-    reverse_proxy {$APP_BOLTCARD_SETTINGS_IP}:80
+    reverse_proxy boltcard-hub_settings-gui_1:80
   }
 
 
-  reverse_proxy {$APP_BOLTCARD_HUB_IP}:9002
+  reverse_proxy boltcard-hub_hub_1:9002
 }
