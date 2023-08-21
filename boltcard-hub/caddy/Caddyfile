@@ -7,9 +7,6 @@
   handle /ping {
     reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
   }
-  handle /new {
-    {$APP_BOLTCARD_SERVICE_IP}:9000
-  }
   handle /ln {
     {$APP_BOLTCARD_SERVICE_IP}:9000
   }
