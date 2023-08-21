@@ -117,8 +117,9 @@ services:
       - SS_DATABASE_USERNAME=${APP_BOLTCARD_DB_USER}
       - SS_DATABASE_PASSWORD=${APP_BOLTCARD_DB_PASSWORD}
       - SS_DATABASE_CLASS=PostgreSQLDatabase
-    ports:
-      - 1972:80
+    networks:
+      default:
+        ipv4_address: $APP_BOLTCARD_SETTINGS_IP
   caddy:
     image: caddy
     restart: unless-stopped
