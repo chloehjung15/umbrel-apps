@@ -125,6 +125,7 @@ services:
       APP_BOLTCARD_SERVICE_IP: $APP_BOLTCARD_SERVICE_IP
     ports:
       - "$APP_BOLTCARD_SERVICE_PORT:8080"
+      - "$APP_BOLTCARD_HUB_PORT:$APP_BOLTCARD_HUB_PORT"
     volumes:
       - ${APP_DATA_DIR}/caddy/Caddyfile:/etc/caddy/Caddyfile
       - ${APP_DATA_DIR}/caddy/data:/data
