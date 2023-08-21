@@ -94,7 +94,7 @@ services:
         "enableUpdateDescribeGraph": false,
         "postRateLimit": 100,
         "rateLimit": 200,
-        "forwardReserveFee": 0.01,
+        "forwardReserveFee": 0.05,
         "intraHubFee": 0.003,
         "redis": { "port": 6379, "host": "$APP_BOLTCARD_REDIS_IP", "family": 4, "password": "redis_pass", "db": 0 }, 
         "lnd": { "url": "$APP_LIGHTNING_NODE_IP:$APP_LIGHTNING_NODE_GRPC_PORT", "password": ""}, 
