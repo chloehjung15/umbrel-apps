@@ -8,15 +8,15 @@
     reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
   }
   handle /ln {
-    {$APP_BOLTCARD_SERVICE_IP}:9000
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
   }
   handle /cb {
-    {$APP_BOLTCARD_SERVICE_IP}:9000
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
   }
   handle /.well-known/lnurlp/* {
-    {$APP_BOLTCARD_SERVICE_IP}:9000
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
   }
   handle /lnurlp/* {
-    {$APP_BOLTCARD_SERVICE_IP}:9000
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
   }
 }
