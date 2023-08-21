@@ -106,7 +106,7 @@ services:
       default:
         ipv4_address: $APP_BOLTCARD_HUB_IP
   settings-gui:
-    image: onesandzerosnz/boltcardgui-umbrel:v0.1.2
+    image: onesandzerosnz/boltcardgui-umbrel:v0.1.3
     depends_on:
       - boltcard_db
     expose:
