@@ -5,7 +5,7 @@ services:
       APP_HOST: boltcard-hub_caddy_1
       APP_PORT: 8080
       PROXY_AUTH_WHITELIST: "*"
-      PROXY_AUTH_BLACKLIST: "/settings/*"
+      PROXY_AUTH_BLACKLIST: "/settings,/settings/*"
   boltcard:
     image: onesandzerosnz/boltcard:v0.4.0
     depends_on:
@@ -79,7 +79,7 @@ services:
       default:
         ipv4_address: $APP_BOLTCARD_REDIS_IP
   hub:
-    image: onesandzerosnz/boltcard-lndhub:v0.2.0
+    image: onesandzerosnz/boltcard-lndhub:v0.2.1
     depends_on: [ redis ]
     restart: on-failure
     stop_grace_period: 5m30s
@@ -94,7 +94,7 @@ services:
         "enableUpdateDescribeGraph": false,
         "postRateLimit": 100,
         "rateLimit": 200,
-        "forwardReserveFee": 0.05,
+        "forwardReserveFee": 0.03,
         "intraHubFee": 0.003,
         "redis": { "port": 6379, "host": "$APP_BOLTCARD_REDIS_IP", "family": 4, "password": "redis_pass", "db": 0 }, 
         "lnd": { "url": "$APP_LIGHTNING_NODE_IP:$APP_LIGHTNING_NODE_GRPC_PORT", "password": ""}, 
