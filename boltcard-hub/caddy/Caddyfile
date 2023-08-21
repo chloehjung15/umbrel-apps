@@ -1,3 +1,25 @@
 :8080 {
   reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
 }
+
+:{$APP_BOLTCARD_HUB_PORT} {
+  
+  handle /ping {
+    reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+  handle /new {
+    {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+  handle /ln {
+    {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+  handle /cb {
+    {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+  handle /.well-known/lnurlp/* {
+    {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+  handle /lnurlp/* {
+    {$APP_BOLTCARD_SERVICE_IP}:9000
+  }
+}
