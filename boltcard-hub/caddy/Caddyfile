@@ -2,7 +2,7 @@
   reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
 }
 
-:{$APP_BOLTCARD_HUB_PORT} {
+:8081 {
    
   handle /ping {
     reverse_proxy {$APP_BOLTCARD_SERVICE_IP}:9000
